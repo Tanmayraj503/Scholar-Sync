@@ -8,6 +8,7 @@ import { AiOutlineRise } from "react-icons/ai";
 import { IoTimeOutline } from "react-icons/io5";
 import ScrollToTopButton from "./ScrollToTopButton";
 import { motion } from 'framer-motion';
+import ThemeToggle from "../Pages/darkmodetoggle";
 
 
 export default function Home() {
@@ -80,21 +81,23 @@ export default function Home() {
     return (
         <>
             <Header />
-            <div className="min-h-screen pt-10 lg:pt-12 pb-24">
-                <div className="flex pt-24 lg:pt-26 mx-auto flex-col justify-center items-center px-7">
-                    <motion.h1 className="text-[#bd9c2d] text-center font-bold text-[36px] sm:text-[42px] md:text-5xl mb-5"
+            <ThemeToggle />
+            <div className="min-h-screen pt-10 dark:bg-[#0F172A] bg-[#fbf8ec] lg:pt-12 pb-24">
+                <div className="flex pt-14 lg:pt-16 mx-auto flex-col justify-center items-center px-7">
+                    <motion.h1 className="text-black font-['Playfair_Display'] dark:text-[white] text-center font-bold text-[36px] sm:text-[42px] md:text-5xl mb-5"
                     initial={{opacity:0, y:20}}
                     whileInView={{opacity:1, y:0}}
                     viewport={{once:true, amount:0.4}}
                     transition={{ease:"easeOut", duration:0.6}}>
-                        Stop Signing Away Your Rights
+                        Stop Scrolling, Start Syncing!
                     </motion.h1>
-                    <motion.p className="text-gray-300 text-center md:text-xl"
+                    <motion.p className="text-gray-700 dark:text-gray-400 text-center md:text-lg"
                     initial={{opacity:0, y:20}}
                     whileInView={{opacity:1, y:0}}
                     viewport={{once:true, amount:0.4}}
                     transition={{delay:0.1, ease:"easeOut", duration:0.6}}>
-                        Instantly decode Terms of Service and understand what you're agreeing to</motion.p>
+                        Instantly get the best resources to study from any topic, without the hassle of searching through countless websites.
+                    </motion.p>
                 </div>
                 <motion.div className="flex flex-wrap justify-center items-center sm:gap-20 px-7 gap-4"
                 initial={{opacity:0, y:20}}
@@ -103,42 +106,42 @@ export default function Home() {
                     transition={{ease:"easeOut", duration:0.6, delay:0.2}}>
                     <div className="mt-10 flex flex-col justify-center items-center">
                         <div className="flex gap-2 items-center">
-                            <span className="text-gray-400"><AiOutlineRise className="text-2xl" /></span>
-                            <h1 className="text-gray-300 text-3xl font-bold">95%</h1>
+                            <span className="text-gray-800 dark:text-gray-300"><AiOutlineRise className="text-2xl" /></span>
+                            <h1 className="text-gray-700 dark:text-gray-300 text-3xl font-bold">95%</h1>
                         </div>
-                        <p className="text-lg text-[#bd9c2d]">Accuracy Rate</p>
+                        <p className="text-lg font-semibold dark:text-cyan-500 text-[#045b65]">Accuracy Rate</p>
                     </div>
                     <div className="mt-10 flex flex-col justify-center items-center">
                         <div className="flex gap-2 items-center">
-                            <span className="text-gray-400"><IoTimeOutline className="text-2xl" /></span>
-                            <h1 className="text-gray-300 text-3xl font-bold">15 s</h1>
+                            <span className="text-gray-800 dark:text-gray-300"><IoTimeOutline className="text-2xl" /></span>
+                            <h1 className="text-gray-700 dark:text-gray-300 text-3xl font-bold">15 s</h1>
                         </div>
-                        <p className="text-lg text-center text-[#bd9c2d]">Average Response Time</p>
+                        <p className="text-lg text-center font-semibold dark:text-cyan-500 text-[#045b65]">Average Response Time</p>
                     </div>
                 </motion.div>
 
                 {/* Main Content */}
                 <div className=" mt-15 max-w-7xl px-7 mx-auto">
-                    <motion.div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl border-opacity-20 p-8  shadow-2xl"
+                    <motion.div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-[#d3d2d2] dark:border-white/10 rounded-2xl border-opacity-20 p-8  shadow-2xl"
                     initial={{opacity:0, y:20}}
                     whileInView={{opacity:1, y:0}}
                     viewport={{once:true, amount:0.4}}
                     transition={{ease:"easeOut", duration:0.6, delay:0.26}}>
                         <div className="mb-6 ">
                             <div className="flex items-start justify-start">
-                                <label className="block text-[#ad8f2a] sm:text-start text-center mb-4 text-lg font-medium">Paste URL or Legal Document Here!</label>
+                                <label className="block dark:text-cyan-500  text-[#045b65] sm:text-start text-center mb-4 text-lg font-medium">Paste The Topic You Want To Explore Here!</label>
                             </div>
                             <textarea name="text" id="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                className="w-full h-48 px-4 py-3  bg-opacity-10 border border-[white] border-opacity-30 rounded-xl text-gray-300 placeholder-[gray-400] placeholder-opacity-50 focus:outline-none focus:ring-1 focus:ring-[#caa630] focus:border-[#caa630] placeholder:text-center sm:placeholder:text-start resize-none"
-                                placeholder="Paste terms of service URL or text here..."
+                                className="w-full h-26 px-4 py-3  bg-opacity-10 border border-[#a5a4a4] dark:border-gray-600 border-opacity-30 rounded-xl dark:text-gray-300 text-gray-700 dark:placeholder:text-gray-400 placeholder:text-gray-600 placeholder-opacity-50 focus:outline-none focus:ring-1 focus:ring-[#047b33] focus:border-[#047b33] dark:focus:ring-[#0195be] dark:focus:border-[#0195be] placeholder:text-center sm:placeholder:text-start resize-none"
+                                placeholder="What are you curious about today?"
                             />
                         </div>
                         <button
                             onClick={analyzedocument}
                             disabled={loading || !input.trim()}
-                            className="px-4 sm:px-16 w-full sm:w-auto bg-linear-to-r from-[#299ead] to-[#16727e] text-gray-300 py-4 rounded-xl font-semibold sm:text-lg hover:from-[#22818e] hover:to-[#125e68] transition text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                            className="px-4 sm:px-16 w-full sm:w-auto bg-linear-to-r dark:bg-[#0195be] dark:hover:bg-[#0181a4] bg-[#047b33] hover:bg-[#036a2a] text-gray-300 py-4 rounded-xl font-semibold sm:text-lg  transition text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                         >
                             {loading ? 'Analyzing...' : 'Analyze Document'}
                         </button>
