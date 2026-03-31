@@ -4,11 +4,14 @@ import { NavLink, } from "react-router-dom";
 import { FaXmark } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
 import AnimatedContent from "./AnimatedContent";
+import { useNavigate } from "react-router-dom";
+import ThemeToggle from "../Pages/darkmodetoggle";
 
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [clicked, setClicked] = React.useState(false);
+    const navigate = useNavigate();
 
     const handlecombinedproperty = () => {
         setClicked(!clicked);
@@ -26,7 +29,7 @@ export default function Header() {
 
     return (
         <>
-            <div className="sticky z-100 top-0">
+            <div className="fixed w-full z-100 top-0">
                 <AnimatedContent
                     distance={40}
                     direction="vertical"
@@ -40,13 +43,14 @@ export default function Header() {
                     delay={0}
                 >
                     <header
-                        className={` bg-[#fbf8eca8] border-b border-[#d3d2d2] dark:border-0 shadow-md w-full dark:bg-[#0f172ac1] dark:text-white text-black  transition-all duration-300 
+                        className={` bg-[#fbf8eca8]  dark:border-0 shadow-lg w-full dark:bg-[#0f172ac1] dark:text-white text-black  transition-all duration-300 
                     ${isScrolled ? "pt-2 pb-3" : "pt-3 pb-3.5"} px-8`}>
 
                         <div className="hidden lg:flex justify-between items-center max-w-340 mx-auto">
-                            <div className="text-3xl font-bold text-[#103998] dark:text-[#0195be] cursor-pointer" >Scholar-Sync</div>
+                            <div className="text-3xl font-bold text-[#103998] dark:text-[#0195be] cursor-pointer"
+                                onClick={() => navigate('/')}>Scholar-Sync</div>
 
-                            <nav className="gap-8 flex">
+                            <nav className="gap-8 flex items-center">
                                 {links.map((item) => (
                                     <div key={item} className="relative group">
                                         <NavLink
@@ -63,24 +67,26 @@ export default function Header() {
                                         </NavLink>
                                     </div>
                                 ))}
+                                <ThemeToggle />
                             </nav>
                         </div>
 
 
                         <div className="flex justify-between items-center lg:hidden">
-                            <div className="text-3xl font-bold text-[#103998] dark:text-[#0195be] cursor-pointer" >Scholar-Sync</div>
+                            <div className="text-3xl font-bold text-[#103998] dark:text-[#0195be] cursor-pointer"
+                                onClick={() => navigate('/')}>Scholar-Sync</div>
                             <button
                                 onClick={handlecombinedproperty}
                                 className="cursor-pointer text-2xl z-50"
                                 aria-label="Toggle menu"
                             >
-                                {clicked ? <FaXmark className="text-[#103998] dark:text-white"/> : <FaBars className="text-[#103998] dark:text-white"/>}
+                                {clicked ? <FaXmark className="text-[#103998] dark:text-white" /> : <FaBars className="text-[#103998] dark:text-white" />}
                             </button>
                         </div>
                     </header >
                 </AnimatedContent>
             </div>
-            <div className={`lg:hidden fixed ${isScrolled ? "top-14" : "top-15.5"} right-0 h-screen w-64 bg-[#ffffff] dark:bg-[#0F172A] shadow-md transition-transform duration-300 ease-in-out z-40 ${clicked ? "translate-x-0" : "translate-x-full"}`}>
+            <div className={`lg:hidden fixed ${isScrolled ? "top-14" : "top-15.5"} right-0 h-screen w-64 bg-[#fbf8ec] shadow-xl dark:bg-[#0F172A] transition-transform duration-300 ease-in-out z-40 ${clicked ? "translate-x-0" : "translate-x-full"}`}>
                 <nav className="flex flex-col gap-7 py-20 px-8 text-xl">
                     {links.map((item) => (
                         <div key={item} className="relative group w-fit">
@@ -96,6 +102,7 @@ export default function Header() {
                             <span className="absolute rounded-full -bottom-2 -left-2.5 -right-2.5 h-0.5 bg-[#103998] dark:bg-[#0195be] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
                         </div>
                     ))}
+                <ThemeToggle />
                 </nav>
             </div>
             {
