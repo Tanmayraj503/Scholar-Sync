@@ -65,15 +65,15 @@ export default function Contact() {
         <>
             <Header />
             <section className="contact">
-                <div className="contact-container dark:bg-[#0F172A] min-w-full min-h-screen pt-10 lg:pt-12 pb-24">
+                <div className="contact-container dark:bg-[#0F172A] bg-[#fbf8ec] min-w-full min-h-screen pt-10 lg:pt-12 pb-24">
                     <div className="text-center px-4">
 
-                        <motion.h1 className=" pt-24 lg:pt-26 mb-4 text-[#bd9c2d] font-bold text-[36px] sm:text-[42px] md:text-5xl"
+                        <motion.h1 className=" pt-24 lg:pt-30 mb-4 font-['Playfair_Display'] text-black dark:text-white font-bold text-[36px] sm:text-[42px] md:text-5xl"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.6 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}>Let's Get In Touch</motion.h1>
-                        <motion.p className="text-gray-400 mt-1 text-lg max-w-3xl mx-auto"
+                        <motion.p className="text-gray-700 dark:text-gray-500 font-['Playfair_Display'] mt-1 text-lg max-w-3xl mx-auto"
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, amount: 0.6 }}
@@ -95,54 +95,54 @@ export default function Contact() {
                             threshold={0.1}
                             delay={0}
                         >
-                            <div className="contact_left w-full bg-[#8679902a]  rounded-xl p-6 mx-auto mt-8">
-                                <div className="text-[#00c8ff] text-xl font-semibold "> Contact Information </div>
+                            <div className="contact_left w-full bg-white dark:bg-white/5 backdrop-blur-xl dark:border-white/10 border border-[#d3d2d2] rounded-2xl p-6 mx-auto mt-8">
+                                <div className="dark:text-[#00c8ff] text-green-700 text-xl font-semibold "> Contact Information </div>
                                 <div className="mt-4 space-y-4 mb-6">
-                                    <div className="flex items-center  bg-[#0b122967] gap-4 p-2 rounded-xl border border-gray-800">
-                                        <span className="text-[#00c8ff] bg-[#00c8ff19] rounded-lg h-10 shrink-0 items-center flex justify-center w-10"><MdEmail className="text-2xl" /></span>
+                                    <div className="flex items-center bg-[#d3d2d2] dark:bg-[#0b122967] gap-4 p-2 rounded-xl border border-[#d3d2d2] dark:border-gray-800">
+                                        <span className="dark:text-[#00c8ff] text-green-700 dark:bg-[#00c8ff19] bg-[#00ff6650] rounded-lg h-10 shrink-0 items-center flex justify-center w-10"><MdEmail className="text-2xl" /></span>
                                         <div className="flex flex-col text-sm sm:text-base ">
-                                            <h2 className="font-semibold text-gray-300">
+                                            <h2 className="font-semibold font-['Playfair_Display'] text-black dark:text-gray-300">
                                                 Email</h2>
-                                            <p className="text-gray-400 break-all  mb-2">tanmayraj707@gmail.com</p>
+                                            <p className="text-gray-700 dark:text-gray-400 break-all  mb-2">tanmayraj707@gmail.com</p>
 
                                         </div>
                                     </div>
-                                    <div className="flex items-center bg-[#0b122966] gap-4 p-2 rounded-xl border border-gray-800">
-                                        <span className="text-[#00c8ff] bg-[#00c8ff19] shrink-0 rounded-lg h-10 items-center flex justify-center w-10"><FaLocationDot className="text-2xl" />
+                                    <div className="flex items-center bg-[#d3d2d2] dark:bg-[#0b122967] gap-4 p-2 rounded-xl border border-[#d3d2d2] dark:border-gray-800">
+                                        <span className="dark:text-[#00c8ff] text-green-700 dark:bg-[#00c8ff19] bg-[#00ff6650] shrink-0 rounded-lg h-10 items-center flex justify-center w-10"><FaLocationDot className="text-2xl" />
                                         </span>
                                         <div className="flex flex-col text-sm sm:text-base">
-                                            <h2 className="font-semibold text-gray-300">Location</h2>
-                                            <p className="text-gray-400 mb-2">New Delhi, India</p>
+                                            <h2 className="font-semibold font-['Playfair_Display'] text-black dark:text-gray-300">Location</h2>
+                                            <p className="text-gray-700 dark:text-gray-400 mb-2">New Delhi, India</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-[#00c8ff] text-xl font-semibold ">
+                                <div className="dark:text-[#00c8ff] text-green-700 text-xl font-semibold ">
                                     Social Media
                                 </div>
                                 <div className="flex gap-4 mt-5">
                                     <a href="https://github.com/Tanmayraj503"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="h-10 bg-[#00c8ff30] w-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-purple-900">
+                                        className="h-10 dark:bg-[#00c8ff30] bg-[#00ff6630] w-10 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-purple-900">
 
                                         <FaGithub className="text-xl" />
                                     </a>
                                     <a href="https://www.instagram.com/tanmay.raj53"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="h-10 bg-[#00c8ff30] w-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-pink-600">
+                                        className="h-10 dark:bg-[#00c8ff30] bg-[#00ff6630] w-10 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-pink-600">
                                         <FaInstagram className="text-xl" />
                                     </a>
                                     <a href="https://www.youtube.com/watch?v=DQS6mU8Uhn8"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="h-10 bg-[#00c8ff30] w-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-blue-400">
+                                        className="h-10 dark:bg-[#00c8ff30] bg-[#00ff6630] w-10 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-400">
                                         <FaLinkedin className="text-xl" />
                                     </a>
                                     <a href="mailto:tanmayraj707@gmail.com"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="h-10 bg-[#00c8ff30] w-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-yellow-500">
+                                        className="h-10 dark:bg-[#00c8ff30] bg-[#00ff6630] w-10 rounded-xl flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-yellow-500">
                                         <FaEnvelope className="text-xl" />
                                     </a>
                                 </div>
@@ -161,33 +161,33 @@ export default function Contact() {
                             delay={0}
                         >
                             <form onSubmit={onSubmit}>
-                                <div className="contact_right w-full bg-[#8679902a] rounded-xl p-6 lg:mt-8">
+                                <div className="contact_right w-full bg-white dark:bg-white/5 backdrop-blur-xl dark:border-white/10 border border-[#d3d2d2] rounded-2xl p-6 lg:mt-8">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:max-w-full mx-auto">
                                         <div className="">
-                                            <p className=" text-gray-200 mb-1">Name</p>
-                                            <div className="flex items-center bg-[#0b122966] rounded-xl border border-gray-800 p-1 focus-within:border-[#0195be] focus-within:ring-[#0195be] focus-within:ring-1 ">
-                                                <FaRegUser className='text-gray-400 text-lg ml-1' />
+                                            <p className=" text-black dark:text-gray-200 mb-1">Name</p>
+                                            <div className="flex items-center bg-[#d3d2d2] dark:bg-[#0b122966] rounded-xl border border-[#d3d2d2] dark:border-gray-800 p-1 dark:focus-within:border-[#0195be] dark:focus-within:ring-[#0195be] focus-within:border-[#047b33] focus-within:ring-[#047b33] focus-within:ring-1 ">
+                                                <FaRegUser className='dark:text-gray-400 text-gray-600 text-lg ml-1' />
                                                 <input type="text"
                                                     id="name"
                                                     name="name"
                                                     value={data.name}
                                                     onChange={onChange}
-                                                    className=" rounded-lg p-2 w-full text-gray-300 focus:outline-none"
+                                                    className=" rounded-lg p-2 w-full text-black  dark:text-gray-300 focus:outline-none"
                                                     required
                                                     placeholder="John Doe"
                                                 />
                                             </div>
                                         </div>
                                         <div className="">
-                                            <p className=" text-gray-200 mb-1">Email</p>
-                                            <div className="flex items-center bg-[#0b122966] rounded-xl border border-gray-800 p-1 mb-2 focus-within:border-[#0195be] focus-within:ring-[#0195be] focus-within:ring-1">
-                                                <FaEnvelope className='text-gray-400 text-lg ml-1' />
+                                            <p className="text-black dark:text-gray-200 mb-1">Email</p>
+                                            <div className="flex items-center bg-[#d3d2d2] dark:bg-[#0b122966] rounded-xl border border-[#d3d2d2] dark:border-gray-800 p-1 mb-2 dark:focus-within:border-[#0195be] dark:focus-within:ring-[#0195be] focus-within:border-[#047b33] focus-within:ring-[#047b33] focus-within:ring-1">
+                                                <FaEnvelope className='dark:text-gray-400 text-gray-600 text-lg ml-1' />
                                                 <input type="text"
                                                     id="email"
                                                     name="email"
                                                     value={data.email}
                                                     onChange={onChange}
-                                                    className=" rounded-lg p-2 w-full text-gray-300 focus:outline-none"
+                                                    className=" rounded-lg p-2 w-full text-black  dark:text-gray-300 focus:outline-none"
                                                     required
                                                     placeholder="you@example.com"
                                                 />
@@ -195,29 +195,29 @@ export default function Contact() {
                                         </div>
                                     </div>
                                     <div className="mb-6">
-                                        <p className=" text-gray-200 mb-1">Message</p>
-                                        <div className="flex bg-[#0b122966] rounded-xl border border-gray-800 p-1  focus-within:border-[#0195be] focus-within:ring-[#0195be] focus-within:ring-1 mb-2">
-                                            <FaRegMessage className=" text-gray-400 text-lg mt-3 ml-1" />
+                                        <p className=" text-black dark:text-gray-200 mb-1">Message</p>
+                                        <div className="flex bg-[#d3d2d2] dark:bg-[#0b122966] rounded-xl border border-[#d3d2d2] dark:border-gray-800 p-1  dark:focus-within:border-[#0195be] dark:focus-within:ring-[#0195be] focus-within:border-[#047b33] focus-within:ring-[#047b33] focus-within:ring-1 mb-2">
+                                            <FaRegMessage className=" dark:text-gray-400 text-gray-600 text-lg mt-3 ml-1" />
                                             <textarea type="message"
                                                 id="message"
                                                 name="message"
                                                 value={data.message}
                                                 onChange={onChange}
                                                 rows={3}
-                                                className="resize-none p-2 w-full text-gray-300 focus:outline-none "
+                                                className="resize-none p-2 w-full text-black  dark:text-gray-300 focus:outline-none "
                                                 placeholder="Your message here..."
                                                 required
                                             />
                                         </div>
                                     </div>
                                     <div className="button">
-                                        <button className="bg-cyan-700 hover:bg-cyan-800 duration-200 cursor-pointer text-white  py-3 px-4 rounded-xl w-full flex items-center justify-center gap-2 text-lg"
+                                        <button className="dark:bg-cyan-700 dark:hover:bg-cyan-800 bg-[#047b33] hover:bg-[#036a2a] duration-200 cursor-pointer text-white  py-3 px-4 rounded-xl w-full flex items-center justify-center gap-2 text-lg"
                                             type="submit">
                                             <FaPaperPlane />
                                             Send Message
                                         </button>
                                     </div>
-                                    <div className="text-gray-400 text-center mt-4">
+                                    <div className="text-gray-700 dark:text-gray-400 text-center mt-4">
                                         <p className="text-[12px]"><strong>* </strong>I value your privacy. Your information will not be shared with third parties.</p>
                                     </div>
                                 </div>
