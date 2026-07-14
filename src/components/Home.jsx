@@ -32,15 +32,15 @@ function formatViews(n) {
 // ─── sub-components ─────────────────────────────────────────────────────────
 
 const categoryMeta = {
-  mostViewed: {
-    label: "Most Viewed",
+  mostRelevant: {
+    label: "Most Relevant",
     icon: <FaEye className="text-rose-400" />,
     accent: "from-rose-500/20 to-transparent",
     border: "border-rose-500/30",
     badge: "bg-rose-500/20 text-rose-300",
   },
-  mostLiked: {
-    label: "Most Liked",
+  highestRated: {
+    label: "Highest Rated",
     icon: <FaThumbsUp className="text-amber-400" />,
     accent: "from-amber-500/20 to-transparent",
     border: "border-amber-500/30",
@@ -374,7 +374,6 @@ export default function Home() {
           </div>
         )}
       </div>
-
 
       <ScrollToTopButton />
       <Footer />
