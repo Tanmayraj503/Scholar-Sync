@@ -8,6 +8,7 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import { BsStars } from "react-icons/bs";
 import ScrollToTopButton from "./ScrollToTopButton";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearch } from "./SearchContext";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -39,8 +40,8 @@ const categoryMeta = {
     border: "border-rose-500/30",
     badge: "bg-rose-500/20 text-rose-300",
   },
-  highestRated: {
-    label: "Highest Rated",
+  longestDuration: {
+    label: "Longest Duration",
     icon: <FaThumbsUp className="text-amber-400" />,
     accent: "from-amber-500/20 to-transparent",
     border: "border-amber-500/30",
@@ -66,7 +67,7 @@ function VideoCard({ video, meta, index }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07, duration: 0.4, ease: "easeOut" }}
-      className="group flex flex-col rounded-xl overflow-hidden border border-white/10 dark:border-white/10 border-[#d3d2d2]/60 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/8 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
+      className="group flex flex-col rounded-xl overflow-hidden border border-white/10 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/8 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
     >
       {/* thumbnail */}
       <div className="relative aspect-video bg-black overflow-hidden">
@@ -174,42 +175,14 @@ function NoVideosBox() {
 // ─── main ────────────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState(null); // { videos, summary, hasVideos }
-  const [error, setError] = useState(null);
-
-  const handleAnalyze = async () => {
-    if (!input.trim()) return;
-    setLoading(true);
-    setResults(null);
-    setError(null);
-
-    try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: input.trim() }),
-      });
-
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
-      const data = await response.json();
-      setResults(data);
-    } catch (err) {
-      console.error("Analyze error:", err);
-      setError("Something went wrong. Please check your connection and try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { input, setInput, loading, results, error, handleAnalyze } = useSearch();
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleAnalyze();
+        e.preventDefault();
+        handleAnalyze(input);
     }
-  };
+};
 
   const hasAnyVideos =
     results &&
@@ -299,7 +272,7 @@ export default function Home() {
               />
             </div>
             <button
-              onClick={handleAnalyze}
+              onClick={() => handleAnalyze(input)}
               disabled={loading || !input.trim()}
               className="px-4 sm:px-16 w-full sm:w-auto bg-[#047b33] hover:bg-[#036a2a] dark:bg-[#0195be] dark:hover:bg-[#0181a4] text-white py-4 rounded-xl font-semibold sm:text-lg transition text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
             >
@@ -309,7 +282,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* ── loading skeleton ── */}
+        {/* ── skeleton showing loading ── */}
         <AnimatePresence>
           {loading && (
             <motion.div
@@ -347,7 +320,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="max-w-7xl px-7 mx-auto mt-10 p-5 rounded-xl border border-red-400/40 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 text-sm"
+            className="max-w-305 px-7 mx-auto mt-10 p-5 rounded-xl border border-red-400/40 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 text-sm"
           >
             {error}
           </motion.div>
