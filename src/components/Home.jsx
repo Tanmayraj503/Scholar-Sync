@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 import { AiOutlineRise } from "react-icons/ai";
@@ -10,7 +10,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearch } from "./SearchContext";
 
-// ─── helpers ────────────────────────────────────────────────────────────────
+// helpers
 
 function formatDuration(iso) {
   if (!iso) return "N/A";
@@ -29,30 +29,29 @@ function formatViews(n) {
   return `${num} views`;
 }
 
-
-// ─── sub-components ─────────────────────────────────────────────────────────
+// sub-components
 
 const categoryMeta = {
   mostRelevant: {
     label: "Most Relevant",
     icon: <FaEye className="text-rose-400" />,
     accent: "from-rose-500/20 to-transparent",
-    border: "border-rose-500/30",
-    badge: "bg-rose-500/20 text-rose-300",
+    border: "dark:border-rose-500/30 text-rose-600",
+    badge: "dark:bg-rose-500/20 dark:text-rose-300 bg-rose-200/60 text-rose-600",
   },
   longestDuration: {
     label: "Longest Duration",
     icon: <FaThumbsUp className="text-amber-400" />,
     accent: "from-amber-500/20 to-transparent",
-    border: "border-amber-500/30",
-    badge: "bg-amber-500/20 text-amber-300",
+    border: "dark:border-amber-500/30 text-amber-600",
+    badge: "dark:bg-amber-500/20 dark:text-amber-300 bg-amber-200/60 text-amber-600",
   },
   shortestDuration: {
     label: "Shortest Duration",
     icon: <FaClock className="text-emerald-400" />,
     accent: "from-emerald-500/20 to-transparent",
-    border: "border-emerald-500/30",
-    badge: "bg-emerald-500/20 text-emerald-300",
+    border: "dark:border-emerald-500/30 text-emerald-600",
+    badge: "dark:bg-emerald-500/20 dark:text-emerald-300 bg-emerald-200/60 text-emerald-600",
   },
 };
 
@@ -67,9 +66,8 @@ function VideoCard({ video, meta, index }) {
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.07, duration: 0.4, ease: "easeOut" }}
-      className="group flex flex-col rounded-xl overflow-hidden border border-white/10 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/8 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
+      className="group flex flex-col rounded-xl overflow-hidden border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 hover:bg-gray-50 dark:hover:bg-white/8 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-black/20"
     >
-      {/* thumbnail */}
       <div className="relative aspect-video bg-black overflow-hidden">
         <img
           src={thumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`}
@@ -87,7 +85,6 @@ function VideoCard({ video, meta, index }) {
         )}
       </div>
 
-      {/* info */}
       <div className="p-3 flex flex-col gap-1.5 flex-1">
         <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 line-clamp-2 leading-snug group-hover:text-[#047b33] dark:group-hover:text-cyan-400 transition-colors">
           {title}
@@ -115,7 +112,6 @@ function CategorySection({ categoryKey, videos }) {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="mb-12"
     >
-      {/* category header */}
       <div className={`flex items-center gap-3 mb-5 pb-3 border-b ${meta.border}`}>
         <span className="text-xl">{meta.icon}</span>
         <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">{meta.label}</h2>
@@ -172,17 +168,32 @@ function NoVideosBox() {
   );
 }
 
-// ─── main ────────────────────────────────────────────────────────────────────
+// main
 
 export default function Home() {
   const { input, setInput, loading, results, error, handleAnalyze } = useSearch();
+  const [slowLoad, setSlowLoad] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Show waking-up message if loading takes more than 8 seconds (Render cold start)
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => setSlowLoad(true), 8000);
+      return () => clearTimeout(timer);
+    } else {
+      setSlowLoad(false);
+    }
+  }, [loading]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleAnalyze(input);
+      e.preventDefault();
+      handleAnalyze(input);
     }
-};
+  };
 
   const hasAnyVideos =
     results &&
@@ -192,7 +203,7 @@ export default function Home() {
     <>
       <Header />
       <div className="min-h-screen pt-10 dark:bg-[#0F172A] bg-[#fbf8ec] lg:pt-12 pb-24">
-        {/* ── hero ── */}
+        {/* hero */}
         <div className="flex pt-24 lg:pt-30 mx-auto flex-col justify-center items-center px-7">
           <motion.h1
             className="text-black font-['Playfair_Display'] dark:text-white text-center font-bold text-[36px] sm:text-[42px] md:text-5xl mb-5"
@@ -215,7 +226,7 @@ export default function Home() {
           </motion.p>
         </div>
 
-        {/* ── stats ── */}
+        {/* stats */}
         <motion.div
           className="flex flex-wrap justify-center items-center sm:gap-20 px-7 gap-4"
           initial={{ opacity: 0, y: 20 }}
@@ -247,7 +258,7 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* ── input card ── */}
+        {/* input card */}
         <div className="mt-15 max-w-7xl px-7 mx-auto">
           <motion.div
             className="bg-white dark:bg-white/5 backdrop-blur-xl border border-[#d3d2d2] dark:border-white/10 rounded-2xl border-opacity-20 p-8 shadow-2xl"
@@ -282,7 +293,7 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* ── skeleton showing loading ── */}
+        {/* loading skeleton */}
         <AnimatePresence>
           {loading && (
             <motion.div
@@ -292,6 +303,20 @@ export default function Home() {
               exit={{ opacity: 0 }}
               className="max-w-7xl px-7 mx-auto mt-12"
             >
+              {/* slow load warning — appears after 8s */}
+              <AnimatePresence>
+                {slowLoad && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-sm text-center text-amber-600 dark:text-amber-400 mb-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-300/40 dark:border-amber-500/20 rounded-xl px-4 py-3"
+                  >
+                    ⏳ The server is waking up — this can take up to 30 seconds on the first request. Hang tight!
+                  </motion.p>
+                )}
+              </AnimatePresence>
+
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-5 h-5 rounded-full bg-gray-300 dark:bg-white/10 animate-pulse" />
                 <div className="h-4 w-40 rounded bg-gray-300 dark:bg-white/10 animate-pulse" />
@@ -315,7 +340,7 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* ── error ── */}
+        {/* error */}
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -326,7 +351,7 @@ export default function Home() {
           </motion.div>
         )}
 
-        {/* ── results ── */}
+        {/* results */}
         {results && !loading && (
           <div className="max-w-7xl px-7 mx-auto mt-12">
             {!hasAnyVideos ? (
