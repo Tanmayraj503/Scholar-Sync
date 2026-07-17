@@ -15,7 +15,7 @@ export default function Footer() {
                     <p className="text-gray-700 dark:text-gray-400 flex items-center flex-wrap">We find the best resources for you so you dont have to keep scrolling.</p>
                 </div>
                 <div className="w-full md:w-5xl flex items-center text-center md:justify-center md:items-end flex-wrap flex-col gap-2">
-                    <p className="text-gray-200 font-bold text-[19px] text-end">Let's Connect</p>
+                    <p className="text-gray-900 dark:text-gray-200 font-bold text-[19px]  text-end">Let's Connect</p>
                     <div className="flex gap-4">
                         <a href="https://github.com/Tanmayraj503"
                             target="_blank"
@@ -30,7 +30,7 @@ export default function Footer() {
                             className="footer-icon text-gray-600 dark:text-gray-300 hover:text-pink-600">
                             <FaInstagram />
                         </a>
-                        <a href="https://www.youtube.com/watch?v=DQS6mU8Uhn8"
+                        <a href="https://www.linkedin.com/in/tanmay-raj-5932b141b/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="footer-icon text-gray-600 dark:text-gray-300 hover:text-blue-400">
