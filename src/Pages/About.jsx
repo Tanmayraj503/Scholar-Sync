@@ -1,4 +1,5 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { FaEye } from "react-icons/fa";
 import { IoShield } from "react-icons/io5";
 import { FaBoltLightning } from "react-icons/fa6";
@@ -16,6 +17,11 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function About() {
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     const stand = [
         {
             title: "Transparency",
@@ -80,28 +86,65 @@ export default function About() {
         },
     ]
 
+
     const isMObile = window.innerWidth < 768;
 
     return (
         <>
             <Header />
-            
+
             <div className='min-w-full min-h-screen pt-10 lg:pt-12 pb-24 dark:bg-[#0F172A] bg-[#fbf8ec]'>
                 <div className=' pt-24 lg:pt-30 mt-18 pb-16 lg:mb-40 mb-10 max-w-6xl mx-auto px-7'>
                     <div className='flex items-center'>
                         <div className='lg:grid lg:grid-cols-2 gap-7'>
                             <div>
-                                <p className='flex gap-2 mb-4 dark:text-green-400 text-[12px] font-semibold items-center text-[#045b65]'><span className='h-0.5 w-7 dark:bg-green-400 bg-[#045b65] '> </span> ABOUT SCHOLAR SYNC</p>
-                                <p className="font-['Playfair_Display'] text-black dark:text-white font-bold text-6xl mt-2">Learning,</p>
-                                <p className="text-6xl font-['Playfair_Display'] font-bold font-style: italic mt-1 dark:text-green-400 text-[#045b65]">curated</p>
-                                <p className="text-6xl text-black dark:text-white font-bold font-['Playfair_Display'] mt-1">for you.</p>
-                                <p className='text-base dark:text-[#95989d] text-gray-700 max-w-190 lg:max-w-115 mt-7'>Scholar Sync bridges the gap between curiosity and quality education. We surface the best YouTube has to offer — not by luck, but by intelligent curation across time, depth, and community trust.</p>
-                                <button className='rounded-3xl shadow-hardGold cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hardGoldlg dark:hover:shadow-Goldlg dark:shadow-Gold flex items-center gap-2 px-8 py-3 text-base mt-8 bg-black dark:bg-orange-400 text-white dark:text-black font-bold'
-                                onClick={() => navigate('/')}>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ ease: "easeOut", duration: 0.6 }}
+                                    className='flex gap-2 mb-4 dark:text-green-400 text-[12px] font-semibold items-center text-[#045b65]'><span className='h-0.5 w-7 dark:bg-green-400 bg-[#045b65] '> </span> ABOUT SCHOLAR SYNC
+                                </motion.p>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ delay: 0.1, ease: "easeOut", duration: 0.6 }}
+                                    className="font-['Playfair_Display'] text-black dark:text-white font-bold text-6xl mt-2">Learning,</motion.p>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ delay: 0.15, ease: "easeOut", duration: 0.6 }}
+                                    className="text-6xl font-['Playfair_Display'] font-bold font-style: italic mt-1 dark:text-green-400 text-[#045b65]">curated</motion.p>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ delay: 0.2, ease: "easeOut", duration: 0.6 }}
+                                    className="text-6xl text-black dark:text-white font-bold font-['Playfair_Display'] mt-1">for you.</motion.p>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ delay: 0.25, ease: "easeOut", duration: 0.6 }}
+                                    className='text-base dark:text-[#95989d] text-gray-700 max-w-190 lg:max-w-115 mt-7'>Scholar Sync bridges the gap between curiosity and quality education. We surface the best YouTube has to offer — not by luck, but by intelligent curation across time, depth, and community trust.</motion.p>
+                                <motion.button
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.4 }}
+                                    transition={{ delay: 0.3, ease: "easeOut", duration: 0.6 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className='rounded-3xl shadow-hardGold cursor-pointer hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hardGoldlg dark:hover:shadow-Goldlg dark:shadow-Gold flex items-center gap-2 px-8 py-3 text-base mt-8 bg-black dark:bg-orange-400 text-white dark:text-black font-bold'
+                                    onClick={() => navigate('/')}>
                                     <span className='font-bold text-2xl'><FaSearch className='font-black text-base ' /></span> Start Exploring
-                                </button>
+                                </motion.button>
                             </div>
-                            <div className='lg:block hidden'>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.6 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.9, }}
+                                className='lg:block hidden'>
                                 <div className='bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-[#d3d2d2] dark:border-white/10'>
                                     <div className='p-4 ml-4 mr-4'>
                                         <h1 className='text-xl font-["Playfair_Display"] font-bold text-black dark:text-white mb-6 mt-4'>What we believe in.</h1>
@@ -118,37 +161,63 @@ export default function About() {
                                         <p className='text-gray-700 dark:text-gray-400 mt-5 mb-5 text-sm'>Scholar Sync believes that the best learning tools get out of your way. We don't curate what you should be interested in — we just help you find the best content once you've decided what matters to you.</p>
                                     </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </div>
                 <div className='px-7  pt-10 mt-10 max-w-6xl mx-auto pb-10'>
-                    <div>
-                        <h1 className='text-4xl font-["Playfair_Display"] font-bold text-black dark:text-white text-start '>Three steps to clarity.</h1>
-                        <p className='text-base mt-3 text-gray-700 dark:text-gray-400'>No accounts, no algorithms deciding what you should think. Just type, search, and learn.</p>
-                    </div>
+                    <motion.div>
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            viewport={{ once: true, amount: 0.5 }}
+                            className='text-4xl font-["Playfair_Display"] font-bold text-black dark:text-white text-start '>Three steps to clarity.
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, ease: "easeOut", delay: 0.15 }}
+                            viewport={{ once: true, amount: 0.5 }}
+                            className='text-base mt-3 text-gray-700 dark:text-gray-400'>No accounts, no algorithms deciding what you should think. Just type, search, and learn.
+                        </motion.p>
+                    </motion.div>
                     <div>
                         <div className='grid md:grid-cols-3 grid-cols-1 gap-8 mt-12'>
                             {method.map((step, index) => {
                                 const Icons = icontext[index].icon;
                                 return (
-
-                                    <div
+                                    <AnimatedContent
                                         key={index}
-                                        className='flex flex-col bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-[#d3d2d2] hover:border-black dark:border-white/10 dark:hover:border-[#07873d] h-full w-full items-center py-6 pl-6 pr-6  hover:shadow-hardBlack dark:hover:shadow-Goldlg transition-shadow duration-300 '>
-                                        <div className='flex flex-col gap-5'>
-                                            <div className=' flex items-center justify-between gap-4 min-w-0'>
-                                                <div className='w-12 h-12 bg-[#bd9b2d38] rounded-xl flex justify-center items-center'>
-                                                    <Icons className='text-[25px] shrink-0 text-[#bd9c2d]' />
+                                        distance={40}
+                                        direction="vertical"
+                                        reverse={false}
+                                        duration={1.5}
+                                        ease="power3.out"
+                                        initialOpacity={0}
+                                        animateOpacity
+                                        scale={1}
+                                        threshold={0.1}
+                                        delay={index * 0.2}
+                                    >
+
+                                        <div
+                                            key={index}
+                                            className='flex flex-col bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-[#d3d2d2] hover:border-black dark:border-white/10 dark:hover:border-[#07873d] h-full w-full items-center py-6 pl-6 pr-6  hover:shadow-hardBlack dark:hover:shadow-Goldlg transition-shadow duration-300 '>
+                                            <div className='flex flex-col gap-5'>
+                                                <div className=' flex items-center justify-between gap-4 min-w-0'>
+                                                    <div className='w-12 h-12 bg-[#bd9b2d38] rounded-xl flex justify-center items-center'>
+                                                        <Icons className='text-[25px] shrink-0 text-[#bd9c2d]' />
+                                                    </div>
+                                                    <h1 className='text-gray-400/50 dark:text-yellow-400/40 font-bold text-5xl mt-2'>{icontext[index].text}</h1>
                                                 </div>
-                                                <h1 className='text-gray-400/50 dark:text-yellow-400/40 font-bold text-5xl mt-2'>{icontext[index].text}</h1>
-                                            </div>
-                                            <div>
-                                                <h2 className='font-["Playfair_Display"] text-xl mt-2 font-bold text-black dark:text-white'>{step.title}</h2>
-                                                <p className='text-gray-700 dark:text-gray-400 mt-3'>{step.description}</p>
+                                                <div>
+                                                    <h2 className='font-["Playfair_Display"] text-xl mt-2 font-bold text-black dark:text-white'>{step.title}</h2>
+                                                    <p className='text-gray-700 dark:text-gray-400 mt-3'>{step.description}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </AnimatedContent>
                                 );
                             })}
                         </div>
@@ -185,7 +254,7 @@ export default function About() {
                             {stats.map((stat, index) => (
                                 <AnimatedContent
                                     key={index}
-                                    distance={40}
+                                    distance={40 - index * 4}
                                     direction="vertical"
                                     reverse={false}
                                     duration={0.9}
@@ -273,7 +342,7 @@ export default function About() {
                         viewport={{ once: true, amount: 0.4 }}
                         transition={{ duration: 0.6, ease: "easeOut" }}>What We Stand For</motion.h1>
                     <div className='grid md:grid-cols-2 grid-cols-1 gap-5'>
-                        {stand.map((titl, index) => {
+                        {stand.map((title, index) => {
                             const Icon = icons[index];
                             return (
                                 <AnimatedContent
@@ -310,8 +379,12 @@ export default function About() {
                     </div>
                 </div> */}
 
-                <div className='max-w-6xl mx-auto mt-10 mb-10 px-7 '>
-                    <div className='dark:bg-white/5 dark:backdrop-blur-xl dark:border-[#07873d] dark:border border-2 dark:shadow-Goldlg border-ink bg-white p-12 z-10 rounded-3xl shadow-hardBlack'>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    viewport={{ once: true, amount: 0.5 }} className='max-w-6xl mx-auto mt-10 mb-10 px-7 '>
+                    <div className='dark:bg-white/5 dark:backdrop-blur-xl dark:shadow-Goldlg bg-white p-12 z-10 rounded-3xl shadow-hardBlack'>
                         <div className='flex md:flex-row flex-col gap-5 justify-between items-center'>
                             <p className="font-['Playfair_Display'] text-xl md:text-2xl text-black font-semibold dark:text-white lg:text-3xl xl:text-4xl max-w-200 italic">"The goal is not to watch more videos - it's to find the <span className='text-[#045b65] dark:text-blue-400'>right one</span>, faster than ever before."</p>
                             <div className='rounded-full shrink-0 bg-yellow-500 border-4 h-24 w-24 flex justify-center items-center border-black'>
@@ -323,14 +396,14 @@ export default function About() {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 <div className='mt-20 px-7 max-w-6xl mx-auto mb-20'>
                     <div className='flex flex-col justify-center item-center'>
                         <motion.h1 className='font-["Playfair_Display"] text-start text-4xl font-bold text-black dark:text-[white] mt-10 mb-6'
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.4 }}
+                            viewport={{ once: true, amount: 0.5 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}>Meet the Team</motion.h1>
                         <motion.div className='mb-8'
                             initial={{ opacity: 0, y: 20 }}
@@ -350,7 +423,7 @@ export default function About() {
                         <motion.div className=''
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true, amount: 0.4 }}
+                            viewport={{ once: true, amount: 0.5 }}
                             transition={{ duration: 0.6, ease: "easeOut" }}>
                             <div className=' dark:bg-white/5 bg-white backdrop-blur-xl p-10 border border-[#d3d2d2] dark:border-white/10 hover:scale-102 dark:hover:border-green-400 hover:border-blue-400 transition-all
                              duration-300 rounded-2xl shadow-2xl'>
