@@ -32,7 +32,7 @@ export default function ThemeToggle() {
     >
       <span
         className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white dark:bg-stone-900 shadow flex items-center justify-center text-xs transition-transform duration-300
-          ${dark ? "translate-x-0" : "translate-x-6"}`}
+          ${dark ? "translate-x-6" : "translate-x-0"}`}
       >
         {dark ? "🌙" : "☀️"}
       </span>

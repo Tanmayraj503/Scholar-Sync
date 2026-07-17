@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import Header from './components/Header.jsx'
 
-document.documentElement.classList.add("dark");
+// document.documentElement.classList.add("dark");
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
