@@ -16,7 +16,7 @@ export default function ScrollToTopButton() {
         window.scrollTo({
             top: 0,
             left: 0,
-            behaviour: "smooth"
+            behavior: "smooth"
         })
     }
 
