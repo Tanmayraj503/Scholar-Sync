@@ -5,7 +5,7 @@
  *   body: { topic: string }
  *   returns: {
  *     videos: {
- *       mostViewed:       Video[],
+ *       mostRelevant:     Video[],   // blended relevance + view score
  *       mostLiked:        Video[],
  *       shortestDuration: Video[],
  *     },
@@ -14,7 +14,7 @@
  *   }
  *
  * Video shape:
- *   { videoId, title, channelTitle, publishedAt, viewCount, duration, thumbnail }
+ *   { videoId, title, channelTitle, publishedAt, viewCount, likeCount, duration, thumbnail }
  */
 
 import express from "express";
@@ -33,36 +33,7 @@ const GEMINI_API_KEY  = process.env.GEMINI_API_KEY;
 
 // ─── YouTube helpers ─────────────────────────────────────────────────────────
 
-/**
- * Extract the core keywords from a topic for relevance filtering.
- * e.g. "node.js tutorial for beginners" -> ["node", "nodejs", "node.js", "tutorial", "beginners"]
- */
-function extractKeywords(topic) {
-  const stopWords = new Set(["for", "the", "a", "an", "in", "of", "to", "and", "or", "how", "what", "is", "with", "using"]);
-  const raw = topic.toLowerCase().replace(/[^a-z0-9.\s]/g, " ").split(/\s+/).filter(w => w.length > 1 && !stopWords.has(w));
-  // also add dot-stripped variants so "node.js" matches "nodejs" and vice-versa
-  const extras = raw.flatMap(w => [w.replace(/\./g, ""), w.replace(/\./g, "js")]).filter(w => w.length > 1);
-  return [...new Set([...raw, ...extras])];
-}
-
-/**
- * Return true if the video title/description contains at least one keyword from the topic.
- * This filters out completely unrelated results that YouTube sometimes returns.
- */
-function isRelevant(item, keywords) {
-  if (!keywords.length) return true;
-  const haystack = [
-    item.snippet?.title || "",
-    item.snippet?.description || "",
-    item.snippet?.channelTitle || "",
-  ].join(" ").toLowerCase();
-  return keywords.some(kw => haystack.includes(kw));
-}
-
-/**
- * Search YouTube for a topic with a given sort order, then filter by keyword relevance.
- */
-async function searchYouTube({ topic, keywords, order, maxResults = 20 }) {
+async function searchYouTube({ topic, order, maxResults = 20 }) {
   const params = new URLSearchParams({
     part: "snippet",
     q: topic,
@@ -80,37 +51,37 @@ async function searchYouTube({ topic, keywords, order, maxResults = 20 }) {
     throw new Error(`YouTube search error: ${JSON.stringify(err)}`);
   }
   const data = await res.json();
-
-  // Filter results to only include videos whose title/description contains a keyword
-  const filtered = (data.items || []).filter(item => isRelevant(item, keywords));
-  console.log(`[YouTube] order=${order} → ${data.items?.length ?? 0} results, ${filtered.length} after keyword filter`);
-  return { ...data, items: filtered };
+  console.log(`[YouTube] order=${order} → ${data.items?.length ?? 0} results`);
+  return data;
 }
 
-/**
- * Fetch content-details (duration) and statistics (viewCount) for a list of video IDs.
- */
 async function fetchVideoDetails(videoIds) {
   if (!videoIds.length) return [];
 
-  const params = new URLSearchParams({
-    part: "contentDetails,statistics,snippet",
-    id: videoIds.join(","),
-    key: YOUTUBE_API_KEY,
-  });
-
-  const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`);
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(`YouTube videos error: ${JSON.stringify(err)}`);
+  const BATCH_SIZE = 50;
+  const batches = [];
+  for (let i = 0; i < videoIds.length; i += BATCH_SIZE) {
+    batches.push(videoIds.slice(i, i + BATCH_SIZE));
   }
-  const data = await res.json();
-  return data.items || [];
+
+  const results = await Promise.all(batches.map(async (batch) => {
+    const params = new URLSearchParams({
+      part: "contentDetails,statistics,snippet",
+      id: batch.join(","),
+      key: YOUTUBE_API_KEY,
+    });
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?${params}`);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(`YouTube videos error: ${JSON.stringify(err)}`);
+    }
+    const data = await res.json();
+    return data.items || [];
+  }));
+
+  return results.flat();
 }
 
-/**
- * Parse ISO 8601 duration (PT#H#M#S) to total seconds.
- */
 function isoToSeconds(iso) {
   if (!iso) return Infinity;
   const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -120,44 +91,72 @@ function isoToSeconds(iso) {
          (parseInt(m[3]) || 0);
 }
 
-/**
- * Convert a raw YouTube API item → our Video shape.
- */
 function toVideo(item) {
   const { id, snippet = {}, contentDetails = {}, statistics = {} } = item;
   const videoId = typeof id === "string" ? id : id?.videoId;
   return {
     videoId,
-    title:        snippet.title         || "Untitled",
-    channelTitle: snippet.channelTitle  || "Unknown",
-    publishedAt:  snippet.publishedAt   || null,
-    viewCount:    statistics.viewCount  || "0",
+    title:        snippet.title          || "Untitled",
+    channelTitle: snippet.channelTitle   || "Unknown",
+    publishedAt:  snippet.publishedAt    || null,
+    viewCount:    statistics.viewCount   || "0",
     likeCount:    statistics.likeCount   || "0",
     duration:     contentDetails.duration || null,
     thumbnail:    snippet.thumbnails?.high?.url || snippet.thumbnails?.default?.url || null,
   };
 }
 
+
+function buildRelevanceViewScore(videos, relevanceOrderIds) {
+  const n = relevanceOrderIds.length;
+
+  // Build a rank map: videoId → 0-based position in relevance results
+  const rankMap = {};
+  relevanceOrderIds.forEach((id, i) => { rankMap[id] = i; });
+
+  // Compute log view counts
+  const logViews = videos.map(v => Math.log10(Math.max(parseInt(v.viewCount) || 1, 1)));
+  const maxLog = Math.max(...logViews, 1);
+
+  return videos.map((v, idx) => {
+    const rank          = rankMap[v.videoId] ?? n;           // missing = worst rank
+    const relevanceScore = 1 - rank / n;                     // 1 = rank 0, 0 = rank n
+    const viewScore      = logViews[idx] / maxLog;           // 0 → 1
+
+    const blended = 0.55 * relevanceScore + 0.45 * viewScore;
+    return { ...v, _score: blended };
+  });
+}
+
 // ─── Gemini helper ────────────────────────────────────────────────────────────
 
-// Try these models in order until one works
 const GEMINI_MODELS = [
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
+  { name: "gemini-2.5-flash",      version: "v1beta" },  // primary — free tier, stable
+  { name: "gemini-2.5-flash-lite", version: "v1beta" },  // fallback — fastest & cheapest 2.5
 ];
 
 const GEMINI_PROMPT = (topic) =>
-  `Give a concise, beginner-friendly summary of the topic: "${topic}". Cover what it is, why it matters, and 2-3 key things a learner should know. Keep it under 200 words. Use plain paragraphs, no markdown headers or bullet points.`;
+  `Write a concise, beginner-friendly summary of the topic: "${topic}".
 
-async function callGemini(model, topic) {
-  // gemini-2.5-flash uses v1; older models use v1beta
-  const apiVersion = model.startsWith("gemini-2.5") ? "v1" : "v1beta";
-  const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+Rules you must follow:
+- Between 150 and 250 words — no more, no less.
+- You MUST finish every sentence you start. Never stop mid-sentence.
+- End on a complete, properly punctuated sentence.
+- Use plain paragraphs only — no bullet points, no headers, no markdown.
+- Cover: what it is, why it matters, and 2-3 key things a beginner should know.`;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function callGemini(model, version, topic, retries = 1) {
+  const url = `https://generativelanguage.googleapis.com/${version}/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
   const body = {
     contents: [{ parts: [{ text: GEMINI_PROMPT(topic) }] }],
-    generationConfig: { maxOutputTokens: 1024, temperature: 0.6 },
+    generationConfig: {
+      maxOutputTokens: 2048,
+      temperature: 0.5,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
   };
 
   const res = await fetch(url, {
@@ -169,26 +168,48 @@ async function callGemini(model, topic) {
   const data = await res.json();
 
   if (!res.ok) {
-    console.error(`[Gemini] ❌ Model "${model}" (${apiVersion}) failed — ${data?.error?.status}: ${data?.error?.message}`);
+    const status  = data?.error?.status  || res.status;
+    const message = data?.error?.message || "Unknown error";
+
+    if (status === "RESOURCE_EXHAUSTED" && retries > 0) {
+      const delayMatch = message.match(/retry in ([\d.]+)s/i);
+      const waitMs = delayMatch ? Math.ceil(parseFloat(delayMatch[1])) * 1000 : 30000;
+      console.warn(`[Gemini] ⏳ Rate limited on "${model}". Retrying in ${waitMs / 1000}s...`);
+      await sleep(waitMs);
+      return callGemini(model, version, topic, retries - 1);
+    }
+
+    console.error(`[Gemini] ❌ "${model}" (${version}) — ${status}: ${message}`);
     return null;
   }
 
-  // Log the raw response structure so we can debug extraction issues
-  const candidate = data?.candidates?.[0];
-  console.log(`[Gemini] Raw candidate finishReason: ${candidate?.finishReason}`);
+  const candidate   = data?.candidates?.[0];
+  const finishReason = candidate?.finishReason;
 
-  // Some models (2.5-flash) return multiple parts including a thinking block;
-  // find the first part that actually has text content
+  // Collect all text parts (2.5-flash returns a thinking block + text block)
   const parts = candidate?.content?.parts || [];
-  const text = parts.map(p => p.text || "").join("").trim();
+  let text = parts.map((p) => p.text || "").join("").trim();
 
   if (!text) {
-    console.warn(`[Gemini] ⚠️  Model "${model}" returned empty text. Full response:`);
-    console.warn(JSON.stringify(data, null, 2));
+    console.warn(`[Gemini] ⚠️  "${model}" returned empty text (finishReason: ${finishReason})`);
     return null;
   }
 
-  console.log(`[Gemini] ✅ Summary generated with model "${model}" (${text.length} chars)`);
+  // If the model was cut off mid-sentence (MAX_TOKENS), trim to the last complete sentence
+  if (finishReason === "MAX_TOKENS") {
+    console.warn(`[Gemini] ⚠️  "${model}" hit token limit — trimming to last complete sentence`);
+    const lastPeriod = Math.max(
+      text.lastIndexOf(". "),
+      text.lastIndexOf("! "),
+      text.lastIndexOf("? "),
+      text.lastIndexOf(".\n"),
+    );
+    if (lastPeriod > text.length * 0.5) {
+      text = text.slice(0, lastPeriod + 1).trim();
+    }
+  }
+
+  console.log(`[Gemini] ✅ "${model}" — ${text.length} chars, finishReason: ${finishReason}`);
   return text;
 }
 
@@ -198,12 +219,12 @@ async function getGeminiSummary(topic) {
     return "Summary unavailable — API key missing.";
   }
 
-  for (const model of GEMINI_MODELS) {
-    const result = await callGemini(model, topic);
+  for (const { name, version } of GEMINI_MODELS) {
+    const result = await callGemini(name, version, topic);
     if (result) return result;
   }
 
-  console.error("[Gemini] ❌ All models failed. Check your API key and quota at https://aistudio.google.com");
+  console.error("[Gemini] ❌ All models failed.");
   return "Summary unavailable at the moment.";
 }
 
@@ -215,26 +236,25 @@ app.post("/api/analyze", async (req, res) => {
   if (!topic || !topic.trim()) {
     return res.status(400).json({ error: "Topic is required." });
   }
-
   if (!YOUTUBE_API_KEY) return res.status(500).json({ error: "YOUTUBE_API_KEY not set." });
   if (!GEMINI_API_KEY)  return res.status(500).json({ error: "GEMINI_API_KEY not set."  });
 
   try {
-    // ── 1. Parallel YouTube searches (20 results each, keyword-filtered) ────────
     const t = topic.trim();
-    const keywords = extractKeywords(t);
-    console.log(`[YouTube] Searching for: "${t}" | keywords: [${keywords.join(", ")}]`);
+    console.log(`\n[Search] Topic: "${t}"`);
 
-    const [viewedSearch, ratingSearch, relevanceSearch] = await Promise.all([
-      searchYouTube({ topic: t, keywords, order: "viewCount" }),
-      searchYouTube({ topic: t, keywords, order: "rating"    }),
-      searchYouTube({ topic: t, keywords, order: "relevance" }),
+    // ── 1. Three parallel YouTube searches ────────────────────────────────────
+    const [relevanceSearch, ratingSearch, viewedSearch] = await Promise.all([
+      searchYouTube({ topic: t, order: "relevance" }),
+      searchYouTube({ topic: t, order: "rating"    }),
+      searchYouTube({ topic: t, order: "viewCount" }),
     ]);
 
-    // ── 2. Deduplicate & collect all IDs ──────────────────────────────────────
+    // ── 2. Deduplicate across all three searches ───────────────────────────────
     const seen     = new Set();
     const allItems = [];
 
+    // Keep relevance results first so their rank order is preserved
     const addItems = (searchResult) => {
       for (const item of searchResult.items || []) {
         const id = item.id?.videoId;
@@ -244,18 +264,16 @@ app.post("/api/analyze", async (req, res) => {
         }
       }
     };
-    addItems(viewedSearch);
-    addItems(ratingSearch);
     addItems(relevanceSearch);
+    addItems(ratingSearch);
+    addItems(viewedSearch);
 
-    // ── 3. Fetch full details (duration, statistics) for all IDs ─────────────
+    // ── 3. Fetch full details for all unique IDs ───────────────────────────────
     const allIds      = allItems.map((i) => (typeof i.id === "string" ? i.id : i.id?.videoId));
     const detailItems = await fetchVideoDetails(allIds);
 
     const detailMap = {};
-    for (const d of detailItems) {
-      detailMap[d.id] = d;
-    }
+    for (const d of detailItems) detailMap[d.id] = d;
 
     const videos = allIds
       .filter((id) => detailMap[id])
@@ -263,12 +281,8 @@ app.post("/api/analyze", async (req, res) => {
 
     const hasVideos = videos.length > 0;
 
-    // ── 4. Build three NON-OVERLAPPING category arrays ────────────────────────
-    // Each video appears in at most ONE category. We assign greedily:
-    // mostViewed first (highest signal), then mostLiked, then shortestDuration.
-
+    // ── 4. Build three NON-OVERLAPPING categories ──────────────────────────────
     const usedIds = new Set();
-
     const pickTop = (sorted, n = 3) => {
       const picks = [];
       for (const v of sorted) {
@@ -280,27 +294,29 @@ app.post("/api/analyze", async (req, res) => {
       return picks;
     };
 
-    const mostViewed = pickTop(
-      [...videos].sort((a, b) => parseInt(b.viewCount) - parseInt(a.viewCount))
+    // Relevance order = the order YouTube's relevance search returned them
+    const relevanceOrderIds = (relevanceSearch.items || []).map(i => i.id?.videoId).filter(Boolean);
+
+    // mostRelevant: blended relevance + view score
+    const scored      = buildRelevanceViewScore(videos, relevanceOrderIds);
+    const mostRelevant = pickTop([...scored].sort((a, b) => b._score - a._score))
+                          .map(({ _score, ...v }) => v);   // strip internal score field
+
+    // longestDuration: longest video not already claimed
+    const longestDuration = pickTop(
+      [...videos].sort((a, b) => isoToSeconds(b.duration) - isoToSeconds(a.duration))
     );
 
-    const mostLiked = pickTop(
-      [...videos].sort((a, b) => parseInt(b.likeCount) - parseInt(a.likeCount))
-    );
-
+    // shortestDuration: shortest video not already claimed
     const shortestDuration = pickTop(
       [...videos].sort((a, b) => isoToSeconds(a.duration) - isoToSeconds(b.duration))
     );
 
-    // ── 5. Gemini summary (always fetch; show after videos or if no videos) ──
-    const summary = await getGeminiSummary(topic.trim());
+    // ── 5. Gemini summary ──────────────────────────────────────────────────────
+    const summary = await getGeminiSummary(t);
 
     return res.json({
-      videos: {
-        mostViewed,
-        mostLiked,
-        shortestDuration,
-      },
+      videos: { mostRelevant, longestDuration, shortestDuration },
       summary,
       hasVideos,
     });
@@ -311,53 +327,35 @@ app.post("/api/analyze", async (req, res) => {
   }
 });
 
-// ─── Gemini debug route ───────────────────────────────────────────────────────
-// Visit http://localhost:5000/api/test-gemini in your browser to diagnose issues
+
 
 app.get("/api/test-gemini", async (req, res) => {
   const key = GEMINI_API_KEY;
-
-  if (!key) {
-    return res.json({ ok: false, reason: "GEMINI_API_KEY is not set in your .env file" });
-  }
+  if (!key) return res.json({ ok: false, reason: "GEMINI_API_KEY is not set in your .env file" });
 
   const results = [];
-
-  for (const model of GEMINI_MODELS) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  for (const { name, version } of GEMINI_MODELS) {
+    const url = `https://generativelanguage.googleapis.com/${version}/models/${name}:generateContent?key=${key}`;
     try {
-      const r = await fetch(url, {
+      const r    = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: "Say hello in one sentence." }] }],
-        }),
+        body: JSON.stringify({ contents: [{ parts: [{ text: "Say hello in one sentence." }] }] }),
       });
-
       const data = await r.json();
-
       if (!r.ok) {
-        results.push({
-          model,
-          ok: false,
-          status: r.status,
-          error: data?.error?.status,
-          message: data?.error?.message,
-        });
+        results.push({ model: name, ok: false, status: r.status, error: data?.error?.status, message: data?.error?.message });
       } else {
-        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-        results.push({ model, ok: true, response: text });
+        const parts = data?.candidates?.[0]?.content?.parts || [];
+        const text  = parts.map(p => p.text || "").join("").trim();
+        results.push({ model: name, ok: true, response: text });
       }
     } catch (e) {
-      results.push({ model, ok: false, message: e.message });
+      results.push({ model: name, ok: false, message: e.message });
     }
   }
 
-  return res.json({
-    keyProvided: !!key,
-    keyPrefix: key ? key.slice(0, 8) + "..." : null,
-    results,
-  });
+  return res.json({ keyProvided: !!key, keyPrefix: key.slice(0, 8) + "...", results });
 });
 
 // ─── start ───────────────────────────────────────────────────────────────────

@@ -8,7 +8,7 @@ import { FaInstagram } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegMessage } from "react-icons/fa6";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ScrollToTopButton from "../components/ScrollToTopButton";
@@ -17,6 +17,10 @@ import { motion } from 'framer-motion';
 
 
 export default function Contact() {
+
+    useEffect(() => {
+          window.scrollTo(0, 0);
+        }, []);
 
     const [data, setData] = useState({
         name: "",
